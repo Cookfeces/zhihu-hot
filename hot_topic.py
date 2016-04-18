@@ -34,7 +34,7 @@ file_name = 'result'
 # The number of topics has been searched
 search_count = 0
 # How many times output once
-output_time = 10
+output_time = 500
 # How many logs to researve
 log_num = 100
 # 程序暂定活着中断后重新开始的树的层数
@@ -100,7 +100,7 @@ def restore_continue_pos():
 # 检查主题在队列中是否存在
 def topic_exist(topic, topic_list):
     for item in topic_list:
-        if item['id'] == topic['id']:
+        if item['id'] == topic.id:
             return True
     return False
 
