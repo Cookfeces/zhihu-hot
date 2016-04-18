@@ -49,6 +49,8 @@ continue_pos = []
 restart = False
 # 记录上次程序中断时的信息的文件名
 continue_filename = 'continue.log'
+# 一些不存在的主题id，不知为何会出现，暂时规避掉
+unkown_topic_id = [19742819]
 
 #test_topic = client.topic(20016366)
 #print(str(root_topic.children))
@@ -124,6 +126,8 @@ def find_hot_topics(topic):
         child_count += 1
         # 如果是之前遍历过的,就直接跳过
         if restart == False and current_deep <= continue_deep and child_count <= continue_pos[current_deep-1]:
+            continue
+        if unkown_topic_id.count(child_topic.id) > 0:
             continue
         find_hot_topics(child_topic)
         if current_deep <= continue_deep:
