@@ -95,6 +95,13 @@ def restore_continue_pos():
     if len(hot_topics) == TOP_SIZE:
         last_topic = hot_topics[TOP_SIZE - 1]
 
+# 检查主题在队列中是否存在
+def topic_exist(topic, topic_list):
+    for item in topic_list:
+        if item['id'] == topic['id']:
+            return True
+    return False
+
 # 深度优先遍历主题的子主题
 def find_hot_topics(topic):
     from functools import cmp_to_key
@@ -128,7 +135,7 @@ def find_hot_topics(topic):
     else:
         topic_item = {'id':topic.id, 'follow_num':topic.follower_count, 'name':topic.name}
         # 判断次换题hot_topics没有时才会考虑是否加入到hot_topics中
-        if hot_topics.count(topic_item) == 0:
+        if topic_exist(topic, hot_topics) == False:
             search_count += 1
             #print('The child topic ID:', topic.id, ' -- The follow number:', topic.follower_count)
             if len(hot_topics) < TOP_SIZE:
