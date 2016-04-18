@@ -37,8 +37,6 @@ search_count = 0
 output_time = 10
 # How many logs to researve
 log_num = 100
-# Log file name
-log_filename = 'a.log'
 # 程序暂定活着中断后重新开始的树的层数
 continue_deep = 3
 # 目前遍历的树的层数
@@ -51,6 +49,8 @@ restart = False
 continue_filename = 'continue.log'
 # 一些不存在的主题id，不知为何会出现，暂时规避掉
 unkown_topic_id = [19742819]
+# 当前主题的路径,用于出错时调试用
+current_route = []
 
 #test_topic = client.topic(20016366)
 #print(str(root_topic.children))
@@ -127,9 +127,11 @@ def find_hot_topics(topic):
         # 如果是之前遍历过的,就直接跳过
         if restart == False and current_deep <= continue_deep and child_count <= continue_pos[current_deep-1]:
             continue
-        if unkown_topic_id.count(child_topic.id) > 0:
+        if unkown_topic_id.count(int(child_topic.id)) > 0:
             continue
+        current_route.append(child_topic.id)
         find_hot_topics(child_topic)
+        current_route.pop()
         if current_deep <= continue_deep:
             continue_pos[current_deep-1] += 1
     # 只有当主题有孩子主题时,才需要将当前层数减1
@@ -184,6 +186,7 @@ def ouput_continue(error_information):
     global  continue_pos
     global  hot_topics
     global continue_deep
+    global current_route
     fp = open(continue_filename, 'w')
     fp.write('++++++++++ continue position ++++++++++\n')
     fp.write('continue deep:' + str(continue_deep))
@@ -199,6 +202,11 @@ def ouput_continue(error_information):
     fp.write('\n\n')
     fp.write('++++++++++ crash information ++++++++++\n')
     fp.write(str(error_information))
+    fp.write('\n\n')
+    fp.write('++++++++++ current route ++++++++++\n')
+    for item in current_route:
+        fp.write('ID(' + str(item) + ') => ')
+    fp.write('End\n')
     fp.close()
 
 
