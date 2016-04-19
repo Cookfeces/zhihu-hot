@@ -123,9 +123,11 @@ def find_hot_topics(topic):
     # 检查话题是否存在
     try:
         topic_children = topic.children
-    except exception as e:
+    except exception.GetDataErrorException as e:
         if e._reason == '话题不存在':
             return
+        else:
+            raise e
     for child_topic in topic_children:
         # current_deep只需要计算一次
         if child_count == 0:
