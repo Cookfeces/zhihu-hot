@@ -7,6 +7,7 @@ import re
 
 from zhihu_oauth import ZhihuClient
 from zhihu_oauth import Topic
+from zhihu_oauth import exception
 
 
 TOKEN_FILE = 'token.cache'
@@ -48,7 +49,7 @@ restart = False
 # 记录上次程序中断时的信息的文件名
 continue_filename = 'continue.log'
 # 一些不存在的主题id，不知为何会出现，暂时规避掉
-unkown_topic_id = [19742819]
+# unkown_topic_id = [19742819, 19619918]
 # 当前主题的路径,用于出错时调试用
 current_route = []
 
@@ -119,7 +120,13 @@ def find_hot_topics(topic):
     global continue_pos
     #print('The topic ID:', topic.id, ' -- The follow number:', topic.follower_count)
     child_count = 0
-    for child_topic in topic.children:
+    # 检查话题是否存在
+    try:
+        topic_children = topic.children
+    except exception as e:
+        if e._reason == '话题不存在':
+            return
+    for child_topic in topic_children:
         # current_deep只需要计算一次
         if child_count == 0:
             current_deep += 1
@@ -127,8 +134,8 @@ def find_hot_topics(topic):
         # 如果是之前遍历过的,就直接跳过
         if restart == False and current_deep <= continue_deep and child_count <= continue_pos[current_deep-1]:
             continue
-        if unkown_topic_id.count(int(child_topic.id)) > 0:
-            continue
+#        if unkown_topic_id.count(int(child_topic.id)) > 0:
+#            continue
         current_route.append(child_topic.id)
         find_hot_topics(child_topic)
         current_route.pop()
