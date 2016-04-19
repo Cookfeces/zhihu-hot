@@ -191,6 +191,21 @@ def output_result():
     fp.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n')
     fp.close()
 
+def output_finish():
+    global hot_topics
+    global file_name
+    global search_count
+    fp = open(file_name,'a')
+    fp.write('++++++++++++++++++++++++++++++\n')
+    fp.write(str(search_count) + ' topics has been search\n')
+    for topic in hot_topics:
+        fp.write('The topic ID:'+ str(topic['id']) +
+                 ' -- The topic name:' + topic['name'] +
+                 ' -- The follow number:' + str(topic['follow_num'])+'\n')
+    fp.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n')
+    fp.write('finish\n')
+    fp.close()
+
 def ouput_continue(error_information):
     global  continue_pos
     global  hot_topics
@@ -234,7 +249,7 @@ if __name__ == '__main__':
     except BaseException as e:
         ouput_continue(e)
     else:
-        output_result()
+        output_finish()
 
 # FIXME
 # 1.当检索在主题还未到达TOP_SIZE时停止,继续的时候可能会有bug,因为会导致产出重复的项
