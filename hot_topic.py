@@ -4,6 +4,7 @@ from __future__ import unicode_literals, print_function
 
 import os
 import re
+import time
 
 from zhihu_oauth import ZhihuClient
 from zhihu_oauth import Topic
@@ -52,6 +53,8 @@ continue_filename = 'continue.log'
 # unkown_topic_id = [19742819, 19619918]
 # 当前主题的路径,用于出错时调试用
 current_route = []
+# 当服务器未响应时等待的时间
+sleep_time = 120
 
 #test_topic = client.topic(20016366)
 #print(str(root_topic.children))
@@ -234,7 +237,7 @@ def ouput_continue(error_information):
     fp.close()
 
 
-if __name__ == '__main__':
+def main_task():
     # 如果中断信息的文件存在但是解析时错误,则也需要重新计算
     if restart == False:
         if os.path.isfile(continue_filename):
@@ -246,10 +249,17 @@ if __name__ == '__main__':
         initial_continue_pos()
     try:
         find_hot_topics(root_topic)
+    except exception.GetDataErrorException as e:
+        if e._reason == '话题不存在':
+            ouput_continue(e)
+            time.sleep(sleep_time)
+            main_task()
     except BaseException as e:
         ouput_continue(e)
     else:
         output_finish()
 
+if __name__ == '__main__':
+    main_task()
 # FIXME
 # 1.当检索在主题还未到达TOP_SIZE时停止,继续的时候可能会有bug,因为会导致产出重复的项
