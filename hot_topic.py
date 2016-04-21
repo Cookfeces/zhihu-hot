@@ -95,7 +95,7 @@ def restore_continue_pos():
     continue_topics = re.findall('The topic ID:([0-9]*) -- The topic name:(.*?)'
                                  ' -- The follow number:([0-9]*)', content, re.S)
     for item in continue_topics:
-        hot_topics.append({'id':int(item[0]),
+        hot_topics.append({'id':item[0],
                            'follow_num':int(item[2]),
                            'name':item[1]})
     if len(hot_topics) == TOP_SIZE:
