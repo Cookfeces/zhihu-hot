@@ -168,7 +168,11 @@ def find_hot_topics(topic):
             continue_pos[current_deep-1] += 1
     # 只有当主题有孩子主题时,才需要将当前层数减1
     if child_count != 0:
+        #当一层遍历结束时,纪录遍历位置的值要归零
+        if current_deep <= continue_deep:
+            continue_pos[continue_deep-1] = 0
         current_deep -= 1
+
 
 def cmp_follower_count(x, y):
     if x['follow_num'] < y['follow_num']:
@@ -234,6 +238,11 @@ def ouput_continue(error_information):
     fp.write('End\n')
     fp.close()
 
+def clean_array():
+    global continue_pos
+    global hot_topics
+    continue_pos = [];
+    hot_topics = [];
 
 def main_task():
     # 如果中断信息的文件存在但是解析时错误,则也需要重新计算
@@ -251,6 +260,7 @@ def main_task():
         if e._reason == '服务器提了一个问题！':
             ouput_continue(e)
             time.sleep(sleep_time)
+            clean_array()
             main_task()
         else:
             ouput_continue(e)
